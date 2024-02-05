@@ -2,6 +2,7 @@ export type DayObject = {
     num: number;
     dayName: string;
     shortDayName: string;
+    weekNumber: number;
 };
 
 export type MonthObject = {
@@ -13,6 +14,26 @@ export type MonthObject = {
 
 export const isLeapYear = (year: number): boolean => {
     return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+};
+
+const getWeek = (date: Date): number => {
+    const year = date.getFullYear();
+    const firstDayOfYear = new Date(year, 0, 1);
+    const dayOfWeek = firstDayOfYear.getDay();
+    const daysToFirstThursday = dayOfWeek <= 4 ? 4 - dayOfWeek : 11 - dayOfWeek;
+    const firstThursday = new Date(
+        firstDayOfYear.setDate(firstDayOfYear.getDate() + daysToFirstThursday),
+    );
+
+    // Adjust for leap years
+    if (year !== date.getFullYear() || date < firstThursday) {
+        firstThursday.setFullYear(year + 1);
+        firstThursday.setDate(
+            4 - (firstThursday.getDay() <= 4 ? firstThursday.getDay() : firstThursday.getDay() - 7),
+        );
+    }
+
+    return Math.ceil((date.getTime() - firstThursday.getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1;
 };
 
 export const getMonths = (year: number): MonthObject[] => {
@@ -38,6 +59,7 @@ export const getMonths = (year: number): MonthObject[] => {
                 num: day,
                 dayName: date.toLocaleString('default', { weekday: 'long' }),
                 shortDayName: date.toLocaleString('default', { weekday: 'short' }),
+                weekNumber: getWeek(date),
             };
             monthObject.days.push(dayObject);
         }

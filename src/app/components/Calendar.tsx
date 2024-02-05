@@ -1,5 +1,6 @@
 'use client';
 import { getMonths } from '@/calendar';
+import Image from 'next/image';
 import { useCallback, useMemo, useState } from 'react';
 import DayCell from './DayCell';
 
@@ -22,20 +23,36 @@ export default function Calendar() {
         [year, monthIdx],
     );
 
+    const yearPlus = useCallback(() => setYear(year + 1), [year]);
+    const yearMinus = useCallback(() => setYear(year - 1), [year]);
+    const monthPlus = useCallback(() => setMonthIdx(monthIdx + 1), [monthIdx]);
+    const monthMinus = useCallback(() => setMonthIdx(monthIdx - 1), [monthIdx]);
+
     return (
         <div>
             <div className="flex justify-center items-center mb-5">
                 <div className="flex justify-start text-xl">
-                    <div className="px-1 cursor-pointer select-none">{'<'}</div>
+                    <div className="px-1 cursor-pointer select-none" onClick={yearMinus}>
+                        {'<'}
+                    </div>
                     <div className="px-1 text-teal-200">{year}</div>
-                    <div className="px-1 cursor-pointer select-none">{'>'}</div>
+                    <div className="px-1 cursor-pointer select-none" onClick={yearPlus}>
+                        {'>'}
+                    </div>
 
-                    <div className="px-1 cursor-pointer select-none">{'<'}</div>
+                    <div className="px-1 cursor-pointer select-none" onClick={monthMinus}>
+                        {'<'}
+                    </div>
                     <div className="px-1 text-teal-200">{month.shortMonthName}</div>
-                    <div className="px-1 cursor-pointer select-none">{'>'}</div>
+                    <div className="px-1 cursor-pointer select-none" onClick={monthPlus}>
+                        {'>'}
+                    </div>
                 </div>
 
-                <div className="flex justify-center flex-1">Nekomulate</div>
+                <div className="flex flex-col items-center flex-1">
+                    <Image src="/catlogo.png" alt="Nekomulate" width={40} height={40} />
+                    <span>・Nekomulate・</span>
+                </div>
 
                 <div className="flex justify-end text-xl w-[175px]"></div>
             </div>
