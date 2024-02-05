@@ -7,7 +7,7 @@ type Props = {
 
 export default function DotMatrix({ total, active }: Props) {
     return (
-        <div className="grid grid-rows-2 grid-flow-col gap-1 my-2 pr-3">
+        <div className="grid grid-rows-3 grid-flow-col gap-1 my-2 pr-3">
             {Array.from({ length: total }, (_, i) => (
                 <div
                     key={i}

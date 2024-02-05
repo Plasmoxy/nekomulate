@@ -1,8 +1,9 @@
 'use client';
-import { getMonths } from '@/calendar';
+import { DayObject, getMonths } from '@/calendar';
 import Image from 'next/image';
 import { useCallback, useMemo, useState } from 'react';
 import DayCell from './DayCell';
+import PerhapsModal from './PerhapsModal';
 
 export default function Calendar() {
     const [year, setYear] = useState(new Date().getFullYear());
@@ -28,8 +29,13 @@ export default function Calendar() {
     const monthPlus = useCallback(() => setMonthIdx(monthIdx + 1), [monthIdx]);
     const monthMinus = useCallback(() => setMonthIdx(monthIdx - 1), [monthIdx]);
 
+    const [modalOpen, setModalOpen] = useState(false);
+    const [modalDay, setModalDay] = useState<DayObject>(month.days[0]);
+
     return (
         <div>
+            <PerhapsModal open={modalOpen} onClose={() => setModalOpen(false)} day={modalDay} />
+
             <div className="flex justify-center items-center mb-5">
                 <div className="flex justify-start text-xl">
                     <div className="px-1 cursor-pointer select-none" onClick={yearMinus}>
@@ -59,7 +65,15 @@ export default function Calendar() {
 
             <div className="grid grid-cols-5 gap-x-3 gap-y-3 text-sm">
                 {month.days.map((day, i) => (
-                    <DayCell key={`${year}-${monthIdx}-${i}`} day={day} isToday={isToday(i + 1)} />
+                    <DayCell
+                        key={`${year}-${monthIdx}-${i}`}
+                        day={day}
+                        isToday={isToday(i + 1)}
+                        onClick={() => {
+                            setModalDay(day);
+                            setModalOpen(true);
+                        }}
+                    />
                 ))}
             </div>
         </div>
