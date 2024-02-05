@@ -1,9 +1,11 @@
 export type DayObject = {
+    num: number;
     dayName: string;
     shortDayName: string;
 };
 
 export type MonthObject = {
+    num: number;
     monthName: string;
     shortMonthName: string;
     days: DayObject[];
@@ -24,6 +26,7 @@ export const getMonths = (year: number): MonthObject[] => {
         });
 
         const monthObject: MonthObject = {
+            num: month,
             monthName,
             shortMonthName,
             days: [],
@@ -32,6 +35,7 @@ export const getMonths = (year: number): MonthObject[] => {
         for (let day = 1; day <= daysInMonth; day++) {
             const date = new Date(year, month - 1, day);
             const dayObject: DayObject = {
+                num: day,
                 dayName: date.toLocaleString('default', { weekday: 'long' }),
                 shortDayName: date.toLocaleString('default', { weekday: 'short' }),
             };
