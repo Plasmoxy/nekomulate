@@ -2,6 +2,7 @@
 import { Activity } from '@/activities';
 import React, { useEffect, useMemo, useState } from 'react';
 import { v4 } from 'uuid';
+import DrawingCanvas from './DrawingCanvas';
 
 type Props = {
     open: boolean;
@@ -72,12 +73,7 @@ const ActivityEditModal = ({ open, onClose, activity }: Props) => {
                             {activity ? `Edit ${activity.title}` : 'Create new activity'}
                         </h4>
 
-                        <div className="mt-2">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
-                            tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-                            veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-                            commodo
-                        </div>
+                        <DrawingCanvas />
                     </div>
                 </div>
             )}
