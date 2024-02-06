@@ -1,5 +1,5 @@
 'use client';
-import { Activity, MOCKACTIVITIES } from '@/activities';
+import { Activity } from '@/activities';
 import { getMonths } from '@/calendar';
 import Image from 'next/image';
 import { useCallback, useMemo, useState } from 'react';
@@ -30,16 +30,43 @@ export default function Calendar() {
     const monthPlus = useCallback(() => setMonthIdx(monthIdx + 1), [monthIdx]);
     const monthMinus = useCallback(() => setMonthIdx(monthIdx - 1), [monthIdx]);
 
-    const [activities, setActivities] = useState<Record<string, Activity>>(MOCKACTIVITIES);
+    const [activities, setActivities] = useState<Record<string, Activity>>({});
+    const getActivitiesForDay = useCallback(
+        (day: number) =>
+            Object.values(activities)
+                .filter(
+                    (activity) =>
+                        new Date(activity.date).getFullYear() === year &&
+                        new Date(activity.date).getMonth() === monthIdx &&
+                        new Date(activity.date).getDate() === day,
+                )
+                .reduce<Record<string, Activity>>(
+                    (acc, activity) => ({ ...acc, [activity.id]: activity }),
+                    {} as Record<string, Activity>,
+                ),
+        [activities, year, monthIdx],
+    );
+
+    const onEditActivityModalClose = useCallback(
+        (editedActivity: Activity) => {
+            setActivities((prev) => ({
+                ...prev,
+                [editedActivity.id]: editedActivity,
+            }));
+            setSelectedActivity(null);
+            setModalOpen(false);
+        },
+        [setActivities],
+    );
 
     const [modalOpen, setModalOpen] = useState(false);
-    const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
+    const [selectedActivity, setSelectedActivity] = useState<Partial<Activity> | null>(null);
 
     return (
         <div>
             <ActivityEditModal
                 open={modalOpen}
-                onClose={() => setModalOpen(false)}
+                onClose={onEditActivityModalClose}
                 activity={selectedActivity}
             />
 
@@ -76,11 +103,22 @@ export default function Calendar() {
                         key={`${year}-${monthIdx}-${i}`}
                         day={day}
                         isToday={isToday(i + 1)}
-                        onActivityClicked={(activity) => {
-                            setSelectedActivity(activity);
+                        onActivityClicked={(targetActivity) => {
+                            setSelectedActivity(
+                                targetActivity
+                                    ? targetActivity
+                                    : // construct date for new activity in advance yyyy-mm-dd format, adding 0 to month and day if less than 10
+                                      {
+                                          date: `${year}-${(monthIdx + 1)
+                                              .toString()
+                                              .padStart(2, '0')}-${(i + 1)
+                                              .toString()
+                                              .padStart(2, '0')}`,
+                                      },
+                            );
                             setModalOpen(true);
                         }}
-                        activities={activities}
+                        activities={getActivitiesForDay(i + 1)}
                     />
                 ))}
             </div>

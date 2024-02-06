@@ -1,28 +1,32 @@
 'use-client';
 import { Activity } from '@/activities';
 import React, { useEffect, useMemo, useState } from 'react';
+import { v4 } from 'uuid';
 
 type Props = {
     open: boolean;
     onClose: (editedActivity: Activity) => void;
-    activity: Activity | null;
+    activity: Partial<Activity> | null;
 };
 
 const ActivityEditModal = ({ open, onClose, activity }: Props) => {
+    console.log('Incoming activity:', activity);
+
     const [title, setTitle] = useState(activity?.title ?? '');
     const [color, setColor] = useState(activity?.color ?? 'teal-200');
     const [date, setDate] = useState(activity?.date ?? new Date().toISOString().split('T')[0]);
     const [imageBase64, setImageBase64] = useState(activity?.imageBase64 ?? '');
 
+    const id = activity?.id ?? v4(); // keep regenerating ID if activity null
     const activityState = useMemo(
         () => ({
-            id: activity?.id ?? '',
+            id,
             title,
             color,
             date,
             imageBase64,
         }),
-        [title, color, date, imageBase64, activity?.id],
+        [title, color, date, imageBase64, id],
     );
 
     // Close the modal on Escape key press
