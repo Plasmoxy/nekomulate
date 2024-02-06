@@ -70,7 +70,7 @@ const ActivityEditModal = ({ open, onClose, activity }: Props) => {
                             ×
                         </button>
                         <h4 className={`text-${activity?.color ?? 'green-400'}`}>
-                            {activity ? `Edit ${activity.title}` : 'Create new activity'}
+                            {activity?.title ? `Edit ${activity.title}` : 'Create new activity'}
                         </h4>
 
                         <DrawingCanvas />
