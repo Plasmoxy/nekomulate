@@ -1,9 +1,10 @@
 'use client';
-import { DayObject, getMonths } from '@/calendar';
+import { Activity, MOCKACTIVITIES } from '@/activities';
+import { getMonths } from '@/calendar';
 import Image from 'next/image';
 import { useCallback, useMemo, useState } from 'react';
+import ActivityEditModal from './ActivityEditModal';
 import DayCell from './DayCell';
-import PerhapsModal from './PerhapsModal';
 
 export default function Calendar() {
     const [year, setYear] = useState(new Date().getFullYear());
@@ -29,12 +30,18 @@ export default function Calendar() {
     const monthPlus = useCallback(() => setMonthIdx(monthIdx + 1), [monthIdx]);
     const monthMinus = useCallback(() => setMonthIdx(monthIdx - 1), [monthIdx]);
 
+    const [activities, setActivities] = useState<Record<string, Activity>>(MOCKACTIVITIES);
+
     const [modalOpen, setModalOpen] = useState(false);
-    const [modalDay, setModalDay] = useState<DayObject>(month.days[0]);
+    const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
 
     return (
         <div>
-            <PerhapsModal open={modalOpen} onClose={() => setModalOpen(false)} day={modalDay} />
+            <ActivityEditModal
+                open={modalOpen}
+                onClose={() => setModalOpen(false)}
+                activity={selectedActivity}
+            />
 
             <div className="flex justify-center items-center mb-5">
                 <div className="flex justify-start text-xl">
@@ -69,10 +76,11 @@ export default function Calendar() {
                         key={`${year}-${monthIdx}-${i}`}
                         day={day}
                         isToday={isToday(i + 1)}
-                        onClick={() => {
-                            setModalDay(day);
+                        onActivityClicked={(activity) => {
+                            setSelectedActivity(activity);
                             setModalOpen(true);
                         }}
+                        activities={activities}
                     />
                 ))}
             </div>

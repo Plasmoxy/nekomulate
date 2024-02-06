@@ -1,19 +1,35 @@
 'use-client';
-import { DayObject } from '@/calendar';
-import React, { useEffect } from 'react';
+import { Activity } from '@/activities';
+import React, { useEffect, useMemo, useState } from 'react';
 
 type Props = {
     open: boolean;
-    onClose: () => void;
-    day: DayObject;
+    onClose: (editedActivity: Activity) => void;
+    activity: Activity | null;
 };
 
-const PerhapsModal = ({ open, onClose, day }: Props) => {
+const ActivityEditModal = ({ open, onClose, activity }: Props) => {
+    const [title, setTitle] = useState(activity?.title ?? '');
+    const [color, setColor] = useState(activity?.color ?? 'teal-200');
+    const [date, setDate] = useState(activity?.date ?? new Date().toISOString().split('T')[0]);
+    const [imageBase64, setImageBase64] = useState(activity?.imageBase64 ?? '');
+
+    const activityState = useMemo(
+        () => ({
+            id: activity?.id ?? '',
+            title,
+            color,
+            date,
+            imageBase64,
+        }),
+        [title, color, date, imageBase64, activity?.id],
+    );
+
     // Close the modal on Escape key press
     useEffect(() => {
         const handleKeyPress = (event: KeyboardEvent) => {
             if (event.key === 'Escape') {
-                onClose();
+                onClose(activityState);
             }
         };
 
@@ -24,12 +40,12 @@ const PerhapsModal = ({ open, onClose, day }: Props) => {
         return () => {
             document.removeEventListener('keydown', handleKeyPress);
         };
-    }, [open, onClose]);
+    }, [open, onClose, activityState]);
 
     // Close the modal when clicking outside of it
     const handleOverlayClick = (event: React.MouseEvent<HTMLDivElement>) => {
         if (event.target === event.currentTarget) {
-            onClose();
+            onClose(activityState);
         }
     };
 
@@ -38,18 +54,18 @@ const PerhapsModal = ({ open, onClose, day }: Props) => {
             {open && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center overflow-auto">
                     <div
-                        className="fixed inset-0 bg-black opacity-50"
+                        className="fixed inset-0 bg-black opacity-90"
                         onClick={handleOverlayClick}
                     ></div>
                     <div className="relative z-50 bg-zinc-900 rounded-lg p-5 max-w-screen-md w-full overflow-y-auto">
                         <button
-                            onClick={onClose}
+                            onClick={() => onClose(activityState)}
                             className="absolute top-2 right-5 text-2xl text-rose-200 hover:text-rose-100 focus:outline-none"
                         >
                             ×
                         </button>
-                        <h4 className="text-rose-200">
-                            {day.num} ・ {day.dayName}
+                        <h4 className={`text-${activity?.color ?? 'green-400'}`}>
+                            {activity ? `Edit ${activity.title}` : 'Create new activity'}
                         </h4>
 
                         <div className="mt-2">
@@ -65,4 +81,4 @@ const PerhapsModal = ({ open, onClose, day }: Props) => {
     );
 };
 
-export default PerhapsModal;
+export default ActivityEditModal;

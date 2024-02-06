@@ -26,5 +26,6 @@ const config: Config = {
         },
     },
     plugins: [],
+    safelist: ['bg-teal-200', 'bg-rose-200', 'bg-amber-300', 'bg-cyan-100', 'white', 'green-400'],
 };
 export default config;
