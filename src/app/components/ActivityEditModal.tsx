@@ -1,24 +1,22 @@
 'use-client';
-import { Activity } from '@/activities';
+import { Activity, ActivityInput } from '@/activities';
 import React, { useEffect, useMemo, useState } from 'react';
-import { v4 } from 'uuid';
+import ColorSelector from './ColorSelector';
 import DrawingCanvas from './DrawingCanvas';
 
 type Props = {
     open: boolean;
     onClose: (editedActivity: Activity) => void;
-    activity: Partial<Activity> | null;
+    activity: ActivityInput;
 };
 
 const ActivityEditModal = ({ open, onClose, activity }: Props) => {
-    console.log('Incoming activity:', activity);
+    const [title, setTitle] = useState(activity.title ?? '');
+    const [color, setColor] = useState(activity.color ?? 'teal-200');
+    const [date, setDate] = useState(activity.date ?? new Date().toISOString().split('T')[0]);
+    const [imageBase64, setImageBase64] = useState(activity.imageBase64 ?? '');
 
-    const [title, setTitle] = useState(activity?.title ?? '');
-    const [color, setColor] = useState(activity?.color ?? 'teal-200');
-    const [date, setDate] = useState(activity?.date ?? new Date().toISOString().split('T')[0]);
-    const [imageBase64, setImageBase64] = useState(activity?.imageBase64 ?? '');
-
-    const id = activity?.id ?? v4(); // keep regenerating ID if activity null
+    const id = activity.id;
     const activityState = useMemo(
         () => ({
             id,
@@ -70,10 +68,37 @@ const ActivityEditModal = ({ open, onClose, activity }: Props) => {
                             ×
                         </button>
                         <h4 className={`text-${activity?.color ?? 'green-400'}`}>
-                            {activity?.title ? `Edit ${activity.title}` : 'Create new activity'}
+                            {activity.title ? `Edit ${activity.title}` : 'Create new activity'}
                         </h4>
 
-                        <DrawingCanvas />
+                        <div className="flex flex-row space-y-3 mt-5">
+                            <div className="mr-5">
+                                <label className="ml-2">Icon (draw)</label>
+                                <DrawingCanvas image={imageBase64} setImage={setImageBase64} />
+                            </div>
+
+                            <div className="flex-1 flex flex-col !mt-0">
+                                <label htmlFor="title">Title</label>
+                                <input
+                                    id="title"
+                                    type="text"
+                                    value={title}
+                                    onChange={(e) => setTitle(e.target.value)}
+                                    className="rounded-md bg-zinc-800 !outline-none py-1 px-2 mt-1"
+                                />
+
+                                <label htmlFor="color" className="pt-5">
+                                    Color
+                                </label>
+                                <div id="color" className="mt-1">
+                                    {/* color options shown as radio buttons but as colored circles with white border on the one that is selected */}
+                                    <ColorSelector
+                                        selectedColor={color}
+                                        setSelectedColor={setColor}
+                                    />
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}

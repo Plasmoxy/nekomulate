@@ -1,8 +1,9 @@
 'use client';
-import { Activity } from '@/activities';
+import { Activity, ActivityInput } from '@/activities';
 import { getMonths } from '@/calendar';
 import Image from 'next/image';
 import { useCallback, useMemo, useState } from 'react';
+import { v4 } from 'uuid';
 import ActivityEditModal from './ActivityEditModal';
 import DayCell from './DayCell';
 
@@ -60,14 +61,15 @@ export default function Calendar() {
     );
 
     const [modalOpen, setModalOpen] = useState(false);
-    const [selectedActivity, setSelectedActivity] = useState<Partial<Activity> | null>(null);
+    const [selectedActivity, setSelectedActivity] = useState<ActivityInput | null>(null);
 
     return (
-        <div>
+        <>
             <ActivityEditModal
+                key={selectedActivity?.id}
                 open={modalOpen}
                 onClose={onEditActivityModalClose}
-                activity={selectedActivity}
+                activity={selectedActivity ?? { id: v4() }}
             />
 
             <div className="flex justify-center items-center mb-5">
@@ -107,8 +109,8 @@ export default function Calendar() {
                             setSelectedActivity(
                                 targetActivity
                                     ? targetActivity
-                                    : // construct date for new activity in advance yyyy-mm-dd format, adding 0 to month and day if less than 10
-                                      {
+                                    : {
+                                          id: v4(),
                                           date: `${year}-${(monthIdx + 1)
                                               .toString()
                                               .padStart(2, '0')}-${(i + 1)
@@ -122,6 +124,6 @@ export default function Calendar() {
                     />
                 ))}
             </div>
-        </div>
+        </>
     );
 }

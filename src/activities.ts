@@ -8,6 +8,8 @@ export type Activity = {
     date: string; // yyyy-mm-dd
 };
 
+export type ActivityInput = Partial<Omit<Activity, 'id'>> & { id: string };
+
 export const MOCKACTIVITIES: Record<string, Activity> = {
     A: {
         id: 'A',
